@@ -1,0 +1,40 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="css/mui.css" rel="stylesheet" />
+	</head>
+
+
+	<body>
+		<script src="js/mui.js"></script>
+		<script type="text/javascript">
+			mui.init()
+		</script>
+        <textarea id="textDemo" rows="5" cols="40"></textarea><br/>
+        <button onclick="getQroCode()" type="button">生成二维码</button>
+        <div id="divSave" align="center">
+            
+        </div>
+        <script src="js/qrcode.js" type="text/javascript" charset="utf-8"></script>
+        <script type="text/javascript">
+            var concent=document.getElementById("textDemo");
+            var div=document.getElementById("divSave");
+            
+            var code=new QRCode(div,{
+                width:250,
+                height:250,
+                colorDark : "#000000",
+                colorLight : "#ffffff",
+                correctLevel:QRCode.CorrectLevel.M
+            });
+            function getQroCode(){
+                code.makeCode(concent.value);
+            }
+        </script>
+    </body>
+
+</html>

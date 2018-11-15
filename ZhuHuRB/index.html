@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<title></title>
+		<script src="js/mui.min.js"></script>
+		<link href="css/mui.min.css" rel="stylesheet" />
+		<style type="text/css">
+			.labels {
+				position: absolute;
+				top: 240px;
+			}
+
+			.labels p {
+				font-size: 22px;
+				color: #FAFAFA;
+			}
+
+			#details strong {
+				font-size: 22px;
+				color: #FAFAFA;
+			}
+		</style>
+		
+	</head>
+	<body>
+		<!-- 主界面菜单同时移动 -->
+		<!-- 侧滑导航根容器 -->
+		<div class="mui-off-canvas-wrap mui-draggable">
+			<!-- 主页面容器 -->
+			<div class="mui-inner-wrap">
+				<!-- 菜单容器 -->
+				<aside class="mui-off-canvas-left" id="offCanvasSide">
+					<div id="refreshContainer" class="mui-scroll-wrapper">
+						<div class="mui-scroll">
+							<!-- 菜单具体展示内容 -->
+							<div id="PetType"></div>
+						</div>
+					</div>
+				</aside>
+				<!-- 主页面标题 -->
+				<header class="mui-bar mui-bar-nav">
+					<a class="mui-icon mui-action-menu mui-icon-bars mui-pull-left" href="#offCanvasSide"></a>
+					<h1 class="mui-title">9°日报</h1>
+				</header>
+
+				<!-- 主页面内容容器 -->
+				<div id="refreshContainer" class="mui-content mui-scroll-wrapper">
+					<div class="mui-scroll">
+						<!-- 主界面具体展示内容 -->
+						<div id="slider" class="mui-slider">
+							<div class="mui-slider-group mui-slider-loop" id="details">
+
+							</div>
+							<div class="mui-slider-indicator" id="dian">
+
+							</div>
+						</div><br />
+
+
+						<p class='title' style='font-size: 20px;'> &nbsp; 今日热闻</p>
+						<div id="lists">
+
+						</div>
+					</div>
+
+					<div class="mui-off-canvas-backdrop"></div>
+				</div>
+			</div>
+			<script src="js/mui.js"></script>
+			<script type="text/javascript" charset="utf-8">
+				//初始化
+				mui.init();
+				//开启滑动
+				mui('.mui-scroll-wrapper').scroll({
+					deceleration: 0.0005
+				})
+				
+				var list;
+				//请求得到最新数据
+				mui.ajax('http://news-at.zhihu.com/api/4/news/latest', {
+					dataType: 'json', //服务器返回json格式数据
+					type: 'get', //HTTP请求类型
+					timeout: 10000, //超时时间设置为10秒
+					crossDomain: true,
+					success: function(data) {
+						//第一个轮播显示
+						var img = "<div class='mui-slider-item mui-slider-item-duplicate'>";
+						img += "<a href='" + data.top_stories[0].id + "'>";
+						img += "<img width='400' height='300' title='" + data.top_stories[0].title + "'";
+						img += "src='" + data.top_stories[0].image + "'>";
+						img += "</a><div class='labels' ><strong>" + data.top_stories[0].title + "</strong></div> ";
+						img += "</div>";
+						//轮播标点
+						var str = '<div class="mui-indicator mui-active"></div>';
+
+						//得到TOP轮播数据
+						for (var i = 0; i < data.top_stories.length; i++) {
+							img += "<div class='mui-slider-item'>";
+							img += "<a href='" + data.top_stories[i].id + "'>";
+							img += "<img width='400' height='300' title='" + data.top_stories[i].title + "' ";
+							img += "src='" + data.top_stories[i].image + "' >";
+							img += "</a><div class='labels'><strong>" + data.top_stories[i].title + "</strong></div>";
+							img += "</div>";
+							if (i < data.top_stories.length - 1) {
+								str += '<div class="mui-indicator"></div>';
+							}
+						}
+						document.getElementById("dian").innerHTML = str;
+						//
+
+
+						img += "<div class='mui-slider-item mui-slider-item-duplicate'>";
+						img += "<a href='" + data.top_stories[0].id + "'>";
+						img += "<img width='400' height='300' title='" + data.top_stories[0].title + "'";
+						img += "src='" + data.top_stories[0].image + "'>";
+						img += " </a><div class='labels'><strong>" + data.top_stories[0].title + "</strong></div>";
+						document.getElementById("details").innerHTML = img;
+						var gallery = mui('.mui-slider');
+						gallery.slider({
+							interval: 2000
+						});
+
+						list = " ";
+						list += "<div class='mui-card' style='margin-bottom: 5px;'>";
+						list += "<ul class='mui-table-view'>";
+						for (var i = 0; i < data.stories.length; i++) {
+							list += "<li class='mui-table-view-cell mui-media'>";
+							list += "<a href='" + data.stories[i].id + "'>";
+							list += "<img class='mui-media-object mui-pull-left' src='" + data.stories[i].images + "'>";
+							list += "<div class='mui-media-body'>";
+							list += "<p class='mui-ellipsis'>" + data.stories[i].title + "</p>";
+							list += "</div>";
+							list += "</a><li>";
+						}
+						//昨天热闻
+						old();
+					},
+					error: function(xhr, type, errorThrown) {
+						console.log(xhr + type + perrorThrown);
+					},
+				});
+
+
+				function old() {
+					mui.ajax('http://news.at.zhihu.com/api/4/news/before/20181115', {
+						dataType: 'json', //服务器返回json格式数据
+						type: 'get', //HTTP请求类型
+						timeout: 10000, //超时时间设置为10秒
+						crossDomain: true,
+						success: function(data) {
+							list += "<p class='title' style='font-size: 20px;'> &nbsp;  昨日热闻</p>";
+							for (var i = 0; i < data.stories.length; i++) {
+								list += "<li class='mui-table-view-cell mui-media'>";
+								list += "<a href='" + data.stories[i].id + "'>";
+								list += "<img class='mui-media-object mui-pull-left' src='" + data.stories[i].images + "'>";
+								list += "<div class='mui-media-body'>";
+								list += "<p class='mui-ellipsis'>" + data.stories[i].title + "</p>";
+								list += "</div>";
+								list += "</a><li>";
+
+							}
+							list += "</ul>";
+							list += "</div> ";
+							document.getElementById("lists").innerHTML = list;
+
+							
+							mui('#details').on('tap', '.mui-slider-item', function() {
+								var a = this.getElementsByTagName('a')[0];
+								var gg = a.getAttribute('href');
+								mui.plusReady(function() {
+									mui.openWindow({
+										url: 'detailsInfo.html',
+										id: 'new.html',
+										extras: {
+											myname: gg,
+										}
+									});
+								});
+							});
+
+							mui('#lists').on('tap', '.mui-table-view-cell', function() {
+								var a = this.getElementsByTagName('a')[0];
+								var gg = a.getAttribute('href');
+								mui.plusReady(function() {
+									mui.openWindow({
+										url: 'detailsInfo.html',
+										id: 'new.html',
+										extras: {
+											myname: gg,
+										}
+									});
+								});
+							});
+
+
+						},
+						error: function(xhr, type, errorThrown) {
+							console.log(xhr + type + perrorThrown);
+						},
+					});
+				}
+			</script>
+	</body>
+</html>

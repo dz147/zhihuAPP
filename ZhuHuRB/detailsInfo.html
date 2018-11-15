@@ -1,0 +1,74 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="css/mui.css" rel="stylesheet" />
+		<script type="text/javascript" charset="utf-8">
+			mui.init();
+		</script>
+	</head>
+
+	<body>
+		<!-- 主界面移动、菜单不动 -->
+		<div class="mui-off-canvas-wrap mui-draggable">
+			<!-- 菜单容器 -->
+			<aside class="mui-off-canvas-left" id="offCanvasSide">
+				<div id="pullrefresh" class="mui-scroll-wrapper">
+					<div class="mui-scroll">
+						<!-- 菜单具体展示内容 -->
+
+					</div>
+				</div>
+			</aside>
+			<!-- 主页面容器 -->
+			<div class="mui-inner-wrap">
+				<!-- 主页面标题 -->
+
+
+				<div class="mui-content mui-scroll-wrapper">
+					<div class="mui-scroll" id="details">
+						<!-- 主界面具体展示内容 -->
+					</div>
+					<div class="mui-off-canvas-backdrop"></div>
+				</div>
+
+			</div>
+			<script src="js/mui.js"></script>
+			<script type="text/javascript">
+				mui('.mui-scroll-wrapper').scroll({
+					deceleration: 0.0005
+				})
+
+				var id;
+				mui.plusReady(function() {
+					var self = plus.webview.currentWebview();
+					id = self.myname;
+					mui.ajax("http://news-at.zhihu.com/api/4/news/" + id + "", {
+						dataType: 'json', //服务器返回json格式数据
+						type: 'get', //HTTP请求类型
+						timeout: 10000, //超时时间设置为10秒
+						crossDomain: true,
+						success: function(data) {
+							var link = document.createElement("link");
+							link.rel = "StyleSheet";
+							link.type = "text/css";
+							link.href = data.css;
+							document.getElementsByTagName("head")[0].appendChild(link);
+							var str = data.body;
+							document.getElementById("details").innerHTML = str;
+							var div = document.getElementsByClassName("img-place-holder")[0];
+							div.style.background = "url('" + data.image + " ') no-repeat 100% center";
+
+						},
+						error: function(xhr, type, errorThrown) {
+							console.log(xhr + type + perrorThrown);
+						},
+					});
+				});
+			</script>
+	</body>
+
+</html>
