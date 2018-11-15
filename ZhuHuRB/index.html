@@ -165,7 +165,7 @@
 							list += "</div> ";
 							document.getElementById("lists").innerHTML = list;
 
-							
+							//绑定图片点击事件
 							mui('#details').on('tap', '.mui-slider-item', function() {
 								var a = this.getElementsByTagName('a')[0];
 								var gg = a.getAttribute('href');
@@ -179,7 +179,7 @@
 									});
 								});
 							});
-
+							//绑定新闻列表点击事件
 							mui('#lists').on('tap', '.mui-table-view-cell', function() {
 								var a = this.getElementsByTagName('a')[0];
 								var gg = a.getAttribute('href');
